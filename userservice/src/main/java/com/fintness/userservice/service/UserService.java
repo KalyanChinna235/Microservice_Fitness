@@ -4,11 +4,13 @@ import com.fintness.userservice.dto.UserRequest;
 import com.fintness.userservice.dto.UserResponse;
 import com.fintness.userservice.entity.User;
 import com.fintness.userservice.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
 @Service
+@Slf4j
 public class UserService {
 
     @Autowired
@@ -40,5 +42,10 @@ public class UserService {
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
                 .build();
+    }
+
+    public Boolean existsByUserId(Long id) {
+        log.info("Checking if user exists with userId: {}", id);
+        return userRepository.existsById(id);
     }
 }
