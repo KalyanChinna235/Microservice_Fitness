@@ -1,14 +1,15 @@
-# IntelliJ / IDE
-.idea/
-*.iml
+# ===== IDE files =====
+**/.idea/
+**/.vscode/
+**/*.iml
 
-# Maven / Gradle
-target/
-build/
+# ===== Build outputs =====
+**/target/
+**/build/
 
-# Logs
-*.log
+# ===== Logs =====
+**/*.log
 
-# OS files
+# ===== OS files =====
 .DS_Store
 Thumbs.db
