@@ -1,7 +1,7 @@
 package com.fitness.aiservice.controller;
 
-import com.fitness.aiservice.config.GeminiClient;
 import com.fitness.aiservice.dto.AskRequest;
+import com.fitness.aiservice.service.AiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,10 +12,11 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AiController {
 
-    private final GeminiClient geminiClient;
+    private final AiService aiService;
 
-    @GetMapping("/ask")
-    public ResponseEntity<String> ask(@RequestParam String prompt) {
-        return new ResponseEntity<>(geminiClient.generateContent(prompt), HttpStatus.OK);
+    @PostMapping("/ask")
+    public ResponseEntity<String> ask(@RequestBody AskRequest request) {
+        String result = aiService.askChat(request);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

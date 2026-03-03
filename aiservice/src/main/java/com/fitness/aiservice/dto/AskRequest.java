@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AskRequest {
 
+    private String conversationId;
     private String prompt;
 
 }
