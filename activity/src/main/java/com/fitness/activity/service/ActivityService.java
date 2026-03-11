@@ -34,7 +34,7 @@ public class ActivityService {
 
     public ActivityResponse trackActivity(ActivityRequest activityRequest) {
         boolean userExist = userValidationService.validateUserExists(activityRequest.getUserId());
-        if(!userExist) {
+        if (!userExist) {
             throw new ResourceNotFoundException("User with id " + activityRequest.getUserId() + " not found");
         }
         Activity activity = Activity.builder()
@@ -48,9 +48,9 @@ public class ActivityService {
         Activity activitySave = activityRepository.save(activity);
         try {
             // Publish the activity to RabbitMQ
-             rabbitTemplate.convertAndSend(exchange, routingKey, activitySave);
-        }catch (Exception e){
-         log.error("Failed to publish activity to RabbitMQ: {}", e.getMessage());
+            rabbitTemplate.convertAndSend(exchange, routingKey, activitySave);
+        } catch (Exception e) {
+            log.error("Failed to publish activity to RabbitMQ: {}", e.getMessage());
         }
         return toMapResponse(activitySave);
     }

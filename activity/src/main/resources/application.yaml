@@ -28,6 +28,11 @@ eureka:
     service-url:
       defaultZone: http://localhost:8761/eureka/
 
+  instance:
+    prefer-ip-address: true
+    hostname: localhost
+    instance-id: ${spring.application.name}:${server.port}
+
 rabbitmq:
   exchange:
     name: fitness_exchange
@@ -35,3 +40,4 @@ rabbitmq:
     name: activity_queue
   routing:
     key: activity_routing_key
+    instance-id: ${spring.application.name}:${server.port}

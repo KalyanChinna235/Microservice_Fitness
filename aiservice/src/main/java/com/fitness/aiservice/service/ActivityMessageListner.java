@@ -11,8 +11,20 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ActivityMessageListner {
 
+    private final ActivityAiService activityAiService;
+
     @RabbitListener(queues = "${rabbitmq.queue.name}")
-    public void activityListner(Activity activity){
+    public void activityListner(Activity activity) {
         log.info("Received activity message: {}", activity.getId());
+
+        try {
+
+            activityAiService.generateRecommendation(activity);
+
+            log.info("Recommendation generated for activity: {}", activity.getId());
+
+        } catch (Exception e) {
+            log.error("Gemini API failed: {}", e.getMessage());
+        }
     }
 }

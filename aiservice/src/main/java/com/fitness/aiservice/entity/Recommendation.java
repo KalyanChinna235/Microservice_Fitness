@@ -1,8 +1,10 @@
 package com.fitness.aiservice.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -11,6 +13,8 @@ import java.util.List;
 @Entity
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "recommendations")
 public class Recommendation {
 
@@ -18,9 +22,10 @@ public class Recommendation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String activityId;
-    private String userId;
+    private Long activityId;
+    private Long userId;
     private String activityType;
+    @Column(columnDefinition = "TEXT")
     private String recommendation;
 
     @ElementCollection

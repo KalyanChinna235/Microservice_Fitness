@@ -3,7 +3,10 @@ package com.fitness.aiservice.service;
 import com.fitness.aiservice.config.GeminiClient;
 import com.fitness.aiservice.dto.AskRequest;
 import com.fitness.aiservice.entity.ChatMessage;
+import com.fitness.aiservice.entity.Conversation;
+import com.fitness.aiservice.exception.ResourceNotFoundException;
 import com.fitness.aiservice.repository.ChatMessageRepository;
+import com.fitness.aiservice.repository.ConversationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,38 +20,46 @@ public class AiService {
 
     private final ChatMessageRepository chatMessageRepository;
 
-   public String askChat(AskRequest request){
-
-      List<ChatMessage> oldData = chatMessageRepository.findByConversationIdOrderByTimestampAsc(request.getConversationId());
-       StringBuilder conversationHistory = new StringBuilder();
-       for(ChatMessage message : oldData){
-           conversationHistory.append(message.getRole())
-                   .append(": ")
-                   .append(message.getContent())
-                   .append("\n");
-       }
-       conversationHistory.append("USER: ").append(request.getPrompt()).append("\n");
-       System.out.println("PROMPT LENGTH = " + conversationHistory.length());
-       String  aiReponseChat = geminiClient.generateContent(conversationHistory.toString());
-
-       chatMessageRepository.save(ChatMessage.builder()
-                       .conversationId(request.getConversationId())
-                       .role("USER")
-                       .content(request.getPrompt())
-               .build());
-
-       chatMessageRepository.save(ChatMessage.builder()
-                       .conversationId(request.getConversationId())
-                       .role("AI")
-                       .content(aiReponseChat)
-               .build());
-       return aiReponseChat;
-   }
+    private final ConversationRepository conversationRepository;
 
 
+    public String askChat(AskRequest request) {
 
-//
-//    public String askGemini(String prompt) {
-//        return geminiClient.generateContent(prompt);
-//    }
+        Conversation conversation;
+        // Create new conversation if not exists
+        if (request.getConversationId() != null && request.getConversationId() == 0) {
+            conversation = Conversation.builder()
+                    .userId(1L) // In real application, get user ID from auth context
+                    .build();
+            conversation = conversationRepository.save(conversation);
+        } else {
+            conversation = conversationRepository.findById(request.getConversationId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Conversation not found"));
+        }
+        // Load previous messages
+        List<ChatMessage> oldData = chatMessageRepository.findByConversationIdOrderByCreatedAtAsc(conversation.getId());
+        StringBuilder conversationHistory = new StringBuilder();
+        for (ChatMessage message : oldData) {
+            conversationHistory.append(message.getRole())
+                    .append(": ")
+                    .append(message.getChat())
+                    .append("\n");
+        }
+        conversationHistory.append("USER: ").append(request.getPrompt()).append("\n");
+        String aiReponseChat = geminiClient.generateContent(conversationHistory.toString());
+
+        chatMessageRepository.save(ChatMessage.builder()
+                .conversation(conversation)
+                .role("USER")
+                .chat(request.getPrompt())
+                .build());
+
+        chatMessageRepository.save(ChatMessage.builder()
+                .conversation(conversation)
+                .role("AI")
+                .chat(aiReponseChat)
+                .build());
+        return aiReponseChat;
+    }
+
 }

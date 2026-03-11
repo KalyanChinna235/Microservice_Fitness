@@ -16,8 +16,8 @@ public class RecommendationResponse {
 
     private Long id;
 
-    private String activityId;
-    private String userId;
+    private Long activityId;
+    private Long userId;
     private String activityType;
 
     private String recommendation;

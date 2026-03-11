@@ -1,6 +1,5 @@
 package com.fitness.aiservice.entity;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,27 +8,22 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ChatMessage {
-
+public class Conversation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private Long userId;
 
-    private String role; // USER / AI
-
-    @Column(columnDefinition = "TEXT")
-    private String chat;
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @ManyToOne
-    @JoinColumn(name = "conversation_id")
-    private Conversation conversation;
-
+    @OneToMany(mappedBy = "conversation", cascade = CascadeType.ALL)
+    private List<ChatMessage> messages;
 }
