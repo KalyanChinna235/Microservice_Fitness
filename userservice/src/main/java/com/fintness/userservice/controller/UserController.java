@@ -32,10 +32,14 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
 
-    @GetMapping("/{id}/validate")
-    public ResponseEntity<Boolean> validateUser(@PathVariable Long id) {
-        Boolean user = userService.existsByUserId(id);
-        return ResponseEntity.ok().body(user);
+    @GetMapping("/{keyclockId}/validate")
+    public ResponseEntity<Boolean> validateUser(@PathVariable String keyclockId) {
+        return ResponseEntity.ok(userService.existsByKeyclockId(keyclockId));
+    }
+
+    @GetMapping("/by-keycloak/{keycloakId}")
+    public UserResponse getByKeycloakId(@PathVariable String keycloakId) {
+        return userService.getByKeycloakId(keycloakId);
     }
 }
 

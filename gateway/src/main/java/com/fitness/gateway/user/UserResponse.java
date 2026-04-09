@@ -1,4 +1,4 @@
-package com.fintness.userservice.dto;
+package com.fitness.gateway.user;
 
 
 import lombok.Builder;

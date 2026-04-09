@@ -22,6 +22,7 @@ public class User {
     private Long id;
     private String firstName;
     private String lastName;
+    private String keyclockId;
 
     @Column(unique = true,nullable = false)
     private String email;

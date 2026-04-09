@@ -8,6 +8,12 @@ spring:
     password: test
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  security:
+    oauth2:
+      resource server:
+        jwt:
+          issuer-uri: http://localhost:8181/realms/fitness-oauth2
+
   jpa:
     hibernate:
       ddl-auto: update

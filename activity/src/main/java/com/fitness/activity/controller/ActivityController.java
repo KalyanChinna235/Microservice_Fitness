@@ -4,7 +4,7 @@ import com.fitness.activity.dto.ActivityRequest;
 import com.fitness.activity.dto.ActivityResponse;
 import com.fitness.activity.entity.Activity;
 import com.fitness.activity.service.ActivityService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,27 +12,24 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/activities")
+@RequiredArgsConstructor
 public class ActivityController {
 
-    @Autowired
-    private ActivityService activityService;
+    private final ActivityService activityService;
 
     @PostMapping("/track")
-    public ResponseEntity<ActivityResponse> trackActivity(@RequestBody ActivityRequest activityRequest) {
-
-        return ResponseEntity.ok(activityService.trackActivity(activityRequest));
+    public ResponseEntity<ActivityResponse> trackActivity(@RequestBody ActivityRequest request) {
+        return ResponseEntity.ok(activityService.trackActivity(request));
     }
 
-    @GetMapping()
-    public ResponseEntity<List<ActivityResponse>> getActivitys(@RequestHeader(name = "X-User-Id") Long userId) {
-        return ResponseEntity.ok(activityService.getUserActivities(userId));
-
+    @GetMapping
+    public ResponseEntity<List<ActivityResponse>> getActivities() {
+        return ResponseEntity.ok(activityService.getUserActivities());
     }
 
     @GetMapping("/{activityId}")
     public ResponseEntity<ActivityResponse> getActivity(@PathVariable Long activityId) {
         Activity activity = activityService.getUserActivity(activityId);
-        ActivityResponse activityResponse = activityService.toMapResponse(activity);
-        return ResponseEntity.ok(activityResponse);
+        return ResponseEntity.ok(activityService.toMapResponse(activity));
     }
 }

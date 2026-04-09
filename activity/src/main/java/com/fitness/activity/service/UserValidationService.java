@@ -1,13 +1,13 @@
 package com.fitness.activity.service;
 
-import com.fitness.activity.exception.ResourceNotFoundException;
+import com.fitness.activity.dto.UserResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -15,22 +15,31 @@ public class UserValidationService {
 
     private final WebClient userServiceWebClient;
 
-    public boolean validateUserExists(Long userId) {
-        log.info("Validating user existence for userId: {}", userId);
-        try {
-            return Boolean.TRUE.equals(userServiceWebClient.get()
-                    .uri("/api/users/{id}/validate", userId)
-                    .retrieve()
-                    .bodyToMono(Boolean.class)
-                    .block());
-        } catch (WebClientResponseException e) {
-            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
-                throw new ResourceNotFoundException("User with ID " + userId + " not found");
+    public Long getUserIdByKeycloakId(String keycloakId) {
 
-            } else if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
-                throw new RuntimeException("Invalid Request with ID " + userId);
-            }
+        try {
+            return userServiceWebClient.get()
+                    .uri("/api/users/by-keycloak/{keycloakId}", keycloakId)
+                    .headers(headers -> headers.setBearerAuth(getToken())) // ✅ FIX
+                    .retrieve()
+                    .bodyToMono(UserResponse.class)
+                    .map(UserResponse::getId)
+                    .block();
+
+        } catch (WebClientResponseException e) {
+
+            log.error("User service error: {}", e.getResponseBodyAsString());
+
+            throw new RuntimeException("User service error");
         }
-        return false;
+    }
+
+    // Extract token from SecurityContext
+    private String getToken() {
+        Jwt jwt = (Jwt) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        return jwt.getTokenValue();
     }
 }
