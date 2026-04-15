@@ -20,7 +20,7 @@ public class UserValidationService {
         try {
             return userServiceWebClient.get()
                     .uri("/api/users/by-keycloak/{keycloakId}", keycloakId)
-                    .headers(headers -> headers.setBearerAuth(getToken())) // ✅ FIX
+                    .headers(headers -> headers.setBearerAuth(getToken()))
                     .retrieve()
                     .bodyToMono(UserResponse.class)
                     .map(UserResponse::getId)

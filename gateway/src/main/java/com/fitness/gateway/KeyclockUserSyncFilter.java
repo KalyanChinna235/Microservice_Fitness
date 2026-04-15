@@ -23,7 +23,7 @@ public class KeyclockUserSyncFilter implements WebFilter {
 
         String path = exchange.getRequest().getURI().getPath();
 
-        // ✅ Skip public API
+        // Skip public API
         if (path.startsWith("/api/users/register")) {
             return chain.filter(exchange);
         }
@@ -52,7 +52,7 @@ public class KeyclockUserSyncFilter implements WebFilter {
                                     email,
                                     token
                             )
-                            // ✅ Just continue request (NO header modification ❌)
+                            // Just continue request (NO header modification)
                             .then(chain.filter(exchange));
                 });
     }

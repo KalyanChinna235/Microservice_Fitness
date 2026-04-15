@@ -22,7 +22,7 @@ public class UserValidationService {
             String token
     ) {
 
-        // 1️⃣ Try to get existing user
+        // Try to get existing user
         return userServiceWebClient.get()
                 .uri("/api/users/by-keycloak/{keycloakId}", keycloakId)
                 .headers(h -> h.set(HttpHeaders.AUTHORIZATION, token))
@@ -30,7 +30,7 @@ public class UserValidationService {
                 .bodyToMono(UserResponse.class)
                 .map(UserResponse::getId)
 
-                // 2️⃣ If not found → create user
+                // If not found → create user
                 .onErrorResume(ex -> {
 
                     log.info("User not found, creating new user");
